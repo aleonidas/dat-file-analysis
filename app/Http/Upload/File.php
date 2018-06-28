@@ -2,8 +2,6 @@
 
 namespace App\Http\Upload;
 
-use Illuminate\Http\UploadedFile;
-
 class File
 {
 

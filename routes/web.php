@@ -11,15 +11,11 @@
 |
 */
 
-//$router->get('/', function () use ($router) {
-//    return $router->app->version();
-//});
-
 $router->get('/', [
     'as' => 'home', 'uses' => 'FileController@index'
 ]);
 
-$router->post('/home/upload', [
+$router->post('/upload', [
     'as' => 'home.upload', 'uses' => 'FileController@upload'
 ]);
 
