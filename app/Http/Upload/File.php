@@ -25,7 +25,7 @@ class File
 
         if ($handle = opendir(env('STORAGE_IN'))) {
             while ($file = readdir( $handle)) {
-                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
+                $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
                 if (in_array($extension, $this->getExtensions())) {
                     $files[] = $file;
                 }
