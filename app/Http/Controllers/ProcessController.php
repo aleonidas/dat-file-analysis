@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use function array_column;
 use function array_count_values;
+use function array_filter;
+use function array_keys;
+use function array_shift;
+use function array_walk;
+use function count;
 use Exception;
 use function explode;
 use function fgetcsv;
@@ -51,6 +57,15 @@ class ProcessController extends Controller
             $processed[] = $this->processLine($row);
         }
 
+
+        $processed['quantity_salesman'] = $this->getQuantityOfPerson($processed, 'salesman');
+        $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
+
+        echo '<pre>';
+        print_r($processed);
+
+        exit;
+
         $source  = 'data/in/'.$filename;
         $destiny = 'data/out/';
         $this->moveFileDone($source, $destiny);
@@ -79,9 +94,16 @@ class ProcessController extends Controller
      *
      */
 
-    public function getQuantityCustomers()
+    public function getQuantityOfPerson($processed, $person)
     {
+        $quantity = 0;
+        foreach ($processed as $proc) {
+            if (isset($proc[$person])) {
+                $quantity++;
+            }
+        }
 
+        return $quantity;
     }
 
     public function processLine($row)
@@ -103,22 +125,26 @@ class ProcessController extends Controller
     {
         $row = explode(',', $row);
         return [
-            'id'     => $row[0],
-            'cpf'    => $row[1],
-            'name'   => $row[2],
-            'salary' => $row[3]
-        ];
+            'salesman' => [
+                    'id'     => $row[0],
+                    'cpf'    => $row[1],
+                    'name'   => $row[2],
+                    'salary' => $row[3]
+                ]
+            ];
     }
 
     public function getCustomer($row)
     {
         $row = explode(',', $row);
         return [
-            'id'            => $row[0],
-            'cnpj'          => $row[1],
-            'name'          => $row[2],
-            'business_area' => $row[3]
-        ];
+            'customer' => [
+                    'id'            => $row[0],
+                    'cnpj'          => $row[1],
+                    'name'          => $row[2],
+                    'business_area' => $row[3]
+                ]
+            ];
     }
 
     public function getSales($row)
@@ -127,10 +153,12 @@ class ProcessController extends Controller
         $row = explode(',', $row);
 
         return [
-            'id'            => $row[0],
-            'sale_id'       => $row[1],
-            'items'         => $items,
-            'salesman_id'   => $row[5]
+            'sales' => [
+                'id'            => $row[0],
+                'sale_id'       => $row[1],
+                'items'         => $items,
+                'salesman_id'   => $row[5]
+                ]
         ];
     }
 
