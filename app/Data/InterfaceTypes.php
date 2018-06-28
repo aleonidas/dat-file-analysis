@@ -2,7 +2,7 @@
 
 namespace App\Data;
 
-interface InterfaceData
+interface InterfaceTypes
 {
 
     public static function get(string $row);

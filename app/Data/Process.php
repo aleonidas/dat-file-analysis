@@ -2,6 +2,10 @@
 
 namespace App\Data;
 
+use App\Data\Types\Salesman;
+use App\Data\Types\Customer;
+use App\Data\Types\Sales;
+
 class Process
 {
     public static function run(string $row)

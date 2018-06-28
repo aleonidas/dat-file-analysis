@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Data;
+namespace App\Data\Types;
 
-class Sales implements InterfaceData
+use App\Data\InterfaceTypes;
+
+class Sales implements InterfaceTypes
 {
 
     public static function get(string $row)
