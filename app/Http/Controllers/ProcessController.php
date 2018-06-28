@@ -10,6 +10,7 @@ use App\Data\Salesman;
 use App\Http\Upload\File;
 use Illuminate\Http\Request;
 use App\Models\Salesman as ModelSalesman;
+use App\Models\Salesman as ModelCustomer;
 
 
 class ProcessController extends Controller
@@ -31,19 +32,19 @@ class ProcessController extends Controller
             $processed[] = Process::run($row);
         }
 
-        $processed['quantity_salesman'] = $this->getQuantityOfPerson($processed, 'salesman');
-        $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
-        $processed['average_salary_of_sellers'] = $this->averageSalaryOfSellers($processed);
-        $processed['id_best_selling'] = $this->bestSelling($processed);
-        $processed['id_worst_seller'] = $this->worstSeller($processed);
+        $processed_information = [
+            'quantity_salesman'         => ModelSalesman::getQuantity($processed),
+            'quantity_customer'         => ModelCustomer::getQuantity($processed),
+            'average_salary_of_sellers' => $this->averageSalaryOfSellers($processed),
+            'id_best_selling'           => $this->bestSelling($processed),
+            'id_worst_seller'           => $this->worstSeller($processed)
+
+        ];
 
 
-        ModelSalesman::getQuantity($processed);
-
-        $re = new ModelSalesman();
-        $re->getQuantity($processed);
-
-        exit;
+//        echo '<pre>';
+//        print_r($processed_information);
+//        exit;
 
 
         $source  = env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename;
@@ -51,7 +52,7 @@ class ProcessController extends Controller
         $this->moveFileDone($source, $destiny);
 
         return view('dashboard.report')
-            ->with('processed', $processed);
+            ->with('processed', $processed_information);
     }
 
     public function moveFileDone($source, $destiny)
@@ -61,19 +62,6 @@ class ProcessController extends Controller
         $to = $destiny . DIRECTORY_SEPARATOR . $basename;
         return rename($source, $to);
     }
-
-    public function getQuantityOfPerson($processed, $person)
-    {
-        $quantity = 0;
-        foreach ($processed as $proc) {
-            if (isset($proc[$person])) {
-                $quantity++;
-            }
-        }
-
-        return $quantity;
-    }
-
 
     public function averageSalaryOfSellers($processed)
     {
