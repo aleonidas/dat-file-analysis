@@ -35,7 +35,7 @@ class File
         return $files;
     }
 
-    public function moveFileDone($filename)
+    public function moveAndRenameFileDone($filename)
     {
         $source  = env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename;
         $destiny = env('STORAGE_OUT');

@@ -40,7 +40,7 @@ class ProcessController extends Controller
             'id_worst_seller'           => ModelSales::worstSeller($processed)
         ];
 
-        $file->moveFileDone($filename);
+        $file->moveAndRenameFileDone($filename);
 
         return view('dashboard.report')
             ->with('processed', $processed_information);
