@@ -44,13 +44,8 @@ class ProcessController extends Controller
         $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
         $processed['average_salary_of_sellers'] = $this->averageSalaryOfSellers($processed);
         $processed['id_best_selling'] = $this->bestSelling($processed);
-
         $processed['id_worst_seller'] = $this->worstSeller($processed);
 
-        echo '<pre>';
-        print_r($processed);
-
-        exit;
 
         $source  = 'data/in/'.$filename;
         $destiny = 'data/out/';
@@ -67,18 +62,6 @@ class ProcessController extends Controller
         $to = $destiny . DIRECTORY_SEPARATOR . $basename;
         return rename($source, $to);
     }
-
-    /**
-     *
-     * O arquivo processado deve apresentar como resultados:
-     *
-     * - quantidade de clientes            OK
-     * - quantidade de vendedores          OK
-     * - a média salarial dos vendedores   OK
-     * - o ID da venda mais cara            OK
-     * - o pior vendedor
-     *
-     */
 
     public function getQuantityOfPerson($processed, $person)
     {

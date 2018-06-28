@@ -4,6 +4,15 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>RZ2</title>
     <link href="{{ '/assets/css/bootstrap.min.css' }}" rel="stylesheet"/>
+
+    <style>
+        .card {
+            background: #eee;
+            padding: 15px;
+            margin: 1px;
+        }
+    </style>
+
 </head>
 <body>
 <div class="container">
