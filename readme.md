@@ -1,22 +1,22 @@
 ## Análise de arquivos
 
-##### Estrutura
+### Estrutura
 - PHP 7+
 - [Lumen](https://lumen.laravel.com/)
 
-##### Requisito
+### Requisito
 Modo de leitura/escrita pastas:
 - `data/in`
 - `data/out`
 
-#### Execução
+### Execução
 
 `php -S localhost:8000 -t public`
 
 Link: `localhost:8000`
 
 
-#### Objetivo
+### Objetivos
 Efetuar upload de arquivo restrito ao formato *.dat*.
 Listar os arquivos enviados para efetuar o processamento.
 
