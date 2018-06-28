@@ -11,14 +11,22 @@
 |
 */
 
-//$router->get('/', function () use ($router) {
-//    return $router->app->version();
-//});
-
 $router->get('/', [
-    'as' => 'home', 'uses' => 'HomeController@index'
+    'as' => 'home', 'uses' => 'FileController@index'
 ]);
 
-$router->post('home/upload', [
-    'as' => 'home.upload', 'uses' => 'HomeController@upload'
+$router->post('/upload', [
+    'as' => 'home.upload', 'uses' => 'FileController@upload'
+]);
+
+$router->get('/processar', [
+    'as' => 'process.index', 'uses' => 'ProcessController@index'
+]);
+
+$router->post('/processar', [
+    'as' => 'process.store', 'uses' => 'ProcessController@store'
+]);
+
+$router->get('/relatorio', [
+    'as' => 'process.report', 'uses' => 'ProcessController@report'
 ]);
