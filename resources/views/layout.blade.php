@@ -24,9 +24,8 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <a href="{{ route('home') }}">Home</a> |
-            <a href="{{ route('process.index') }}">Processar Arquivos</a> |
-            Arquivos Processados
+            <a href="{{ route('home') }}">Importar</a> |
+            <a href="{{ route('process.index') }}">Processar Arquivos</a>
         </div>
     </div>
 

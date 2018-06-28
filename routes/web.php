@@ -23,7 +23,6 @@ $router->post('/home/upload', [
     'as' => 'home.upload', 'uses' => 'HomeController@upload'
 ]);
 
-
 $router->get('/processar', [
     'as' => 'process.index', 'uses' => 'ProcessController@index'
 ]);
