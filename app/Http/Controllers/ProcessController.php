@@ -13,12 +13,15 @@ use Exception;
 use function explode;
 use function fgetcsv;
 use function file_get_contents;
+use function floatval;
 use function fopen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use function number_format;
 use function PHPSTORM_META\map;
 use function readfile;
 use function rename;
+use function str_replace;
 use function utf8_decode;
 use function utf8_encode;
 use function view;
@@ -61,6 +64,9 @@ class ProcessController extends Controller
         $processed['quantity_salesman'] = $this->getQuantityOfPerson($processed, 'salesman');
         $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
 
+        $processed['average_salary_of_sellers'] = $this->averageSalaryOfSellers($processed);
+
+
         echo '<pre>';
         print_r($processed);
 
@@ -86,9 +92,9 @@ class ProcessController extends Controller
      *
      * O arquivo processado deve apresentar como resultados:
      *
-     * - quantidade de clientes
-     * - quantidade de vendedores
-     * - a média salarial dos vendedores
+     * - quantidade de clientes            OK
+     * - quantidade de vendedores          OK
+     * - a média salarial dos vendedores   OK
      * - o ID da venda mais cara
      * - o pior vendedor
      *
@@ -104,6 +110,30 @@ class ProcessController extends Controller
         }
 
         return $quantity;
+    }
+
+
+    public function averageSalaryOfSellers($processed)
+    {
+        $quantity_salesman = $this->getQuantityOfPerson($processed, 'salesman');
+        $total_salary = 0;
+
+        foreach ($processed as $proc) {
+            if (isset($proc['salesman'])) {
+                $total_salary += floatval($proc['salesman']['salary']);
+            }
+        }
+
+        return number_format(($total_salary / $quantity_salesman), 2, '.', '');
+    }
+
+    public function bestSelling($processed)
+    {
+        foreach ($processed as $proc) {
+            if (isset($proc['sales'])) {
+
+            }
+        }
     }
 
     public function processLine($row)
@@ -157,7 +187,8 @@ class ProcessController extends Controller
                 'id'            => $row[0],
                 'sale_id'       => $row[1],
                 'items'         => $items,
-                'salesman_id'   => $row[5]
+                'salesman_id'   => $row[5],
+                'total'         => $items['total']
                 ]
         ];
     }
@@ -167,13 +198,19 @@ class ProcessController extends Controller
         $items = explode('[', $row);
         $items = explode(']', $items[1]);
         $items = explode(',', $items[0]);
+        $items = str_replace(' ', '', $items);
+        $total = 0;
 
         foreach ($items as $key => $item) {
             $it = explode('-', $item);
             $items_sale[$key]['id']        = $it[0];
             $items_sale[$key]['quantity']  = $it[1];
             $items_sale[$key]['price']     = $it[2];
+            $items_sale[$key]['subtotal']  = ($it[2] * $it[1]);
+            $total += ($it[2] * $it[1]);
         }
+
+        $items_sale['total'] = $total;
 
         return $items_sale;
     }
