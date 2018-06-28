@@ -2,29 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use function array_column;
-use function array_count_values;
-use function array_filter;
-use function array_keys;
-use function array_shift;
-use function array_walk;
-use function count;
-use Exception;
-use function explode;
-use function fgetcsv;
-use function file_get_contents;
-use function floatval;
-use function fopen;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use function number_format;
-use function PHPSTORM_META\map;
-use function readfile;
-use function rename;
-use function str_replace;
-use function utf8_decode;
-use function utf8_encode;
-use function view;
+use function is_null;
 
 class ProcessController extends Controller
 {
@@ -63,9 +42,10 @@ class ProcessController extends Controller
 
         $processed['quantity_salesman'] = $this->getQuantityOfPerson($processed, 'salesman');
         $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
-
         $processed['average_salary_of_sellers'] = $this->averageSalaryOfSellers($processed);
+        $processed['id_best_selling'] = $this->bestSelling($processed);
 
+        $processed['id_worst_seller'] = $this->worstSeller($processed);
 
         echo '<pre>';
         print_r($processed);
@@ -95,7 +75,7 @@ class ProcessController extends Controller
      * - quantidade de clientes            OK
      * - quantidade de vendedores          OK
      * - a média salarial dos vendedores   OK
-     * - o ID da venda mais cara
+     * - o ID da venda mais cara            OK
      * - o pior vendedor
      *
      */
@@ -129,12 +109,40 @@ class ProcessController extends Controller
 
     public function bestSelling($processed)
     {
+        $sale_id = null;
+        $sale_total = 0;
+
         foreach ($processed as $proc) {
             if (isset($proc['sales'])) {
-
+                if ($proc['sales']['total'] > $sale_total) {
+                    $sale_total = $proc['sales']['total'];
+                    $sale_id   = $proc['sales']['sale_id'];
+                }
             }
         }
+
+        return $sale_id;
     }
+
+    public function worstSeller($processed)
+    {
+        $salesman_id = null;
+        $sale_total = null;
+
+        foreach ($processed as $proc) {
+            if (isset($proc['sales'])) {
+                $sale_total = (is_null($sale_total) ? $proc['sales']['total'] : $sale_total);
+
+                if ($proc['sales']['total'] < $sale_total) {
+                    $sale_total  = $proc['sales']['total'];
+                    $salesman_id = $proc['sales']['salesman_id'];
+                }
+            }
+        }
+
+        return $salesman_id;
+    }
+
 
     public function processLine($row)
     {
