@@ -22,3 +22,7 @@ $router->get('/', [
 $router->post('home/upload', [
     'as' => 'home.upload', 'uses' => 'HomeController@upload'
 ]);
+
+$router->get('/listar', [
+    'as' => 'home.show', 'uses' => 'HomeController@show'
+]);

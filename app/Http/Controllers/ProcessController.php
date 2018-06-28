@@ -35,6 +35,15 @@ class HomeController extends Controller
                 echo '</pre>';
             }
 
+            // Extension
+            // echo $request->file('file_import')->getClientOriginalExtension();
+
+            // Nome original
+            // echo $request->file('file_import')->getClientOriginalName();
+
+
+
+
             // Validar Upload
             //if ($request->file('photo')->isValid()) {
             //}

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use function file_exists;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -9,51 +10,41 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Form
         return view('dashboard.home');
+    }
+
+    public function show()
+    {
+        return view('dashboard.list');
     }
 
     public function upload(Request $request)
     {
         if ($request->file('file_import')->isValid()) {
             $path = 'data/in';
+            $file_received = $request->file('file_import');
 
-            // Extension
-            // echo $request->file('file_import')->getClientOriginalExtension();
-
-            // Nome original
-            // echo $request->file('file_import')->getClientOriginalName();
-
-            $validator = $this->validateDatFormat($request->file('file_import'));
-
-            if ($validator) {
+            if ($this->invalidFileFormat($file_received)) {
                 return redirect()
-                    ->route('home')
-                    ->with('error', 'Houve um erro.');
+                    ->route('home');
             }
 
-            $original_name = $request->file('file_import')->getClientOriginalName();
-            $request->file('file_import')->move($path, $original_name);
-
-            // Mover
-            //$request->file('photo')->move($destinationPath, $fileName);
+            $filename = $file_received->getClientOriginalName();
+            $file_received->move($path, $filename);
 
             return redirect()
-                ->route('home')
-                ->with('success', 'Arquivo enviado com sucesso.');
+                ->route('home.show');
         }
 
         return redirect()
             ->route('home');
     }
 
-    public function validateDatFormat($request_file)
+    public function invalidFileFormat($request_file)
     {
-        if ($request_file->getClientOriginalExtension() === 'dat') {
-            return 'FORMATO: DAT';
+        if ($request_file->getClientOriginalExtension() !== 'dat') {
+            return true;
         }
-
-        return 'FORMATO NAO ACEITO';
     }
 
     public function uploadOld(Request $request, $id)
