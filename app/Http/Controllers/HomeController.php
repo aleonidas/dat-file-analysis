@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use function file_exists;
 use Illuminate\Http\Request;
+use function utf8_encode;
 
 class HomeController extends Controller
 {

@@ -1,10 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>RZ2</title>
-
     <link href="{{ '/assets/css/bootstrap.min.css' }}" rel="stylesheet"/>
 </head>
 <body>

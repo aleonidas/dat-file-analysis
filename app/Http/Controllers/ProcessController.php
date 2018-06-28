@@ -2,9 +2,20 @@
 
 namespace App\Http\Controllers;
 
+use function array_count_values;
+use Exception;
+use function explode;
+use function fgetcsv;
+use function file_get_contents;
+use function fopen;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use function PHPSTORM_META\map;
+use function readfile;
 use function rename;
+use function utf8_decode;
+use function utf8_encode;
+use function view;
 
 class ProcessController extends Controller
 {
@@ -24,7 +35,6 @@ class ProcessController extends Controller
             closedir($handle);
         }
 
-
         return view('dashboard.list')
             ->with('files', $files);
     }
@@ -35,31 +45,18 @@ class ProcessController extends Controller
         $path = 'data/in';
 
         $file_process = file($path.'/'.$filename);
+        $processed = [];
 
-        //Ler os dados do array
         foreach ($file_process as $row) {
-            $row = trim($row);
-
-            echo '<pre>';
-            print_r($row);
-            echo '</pre>';
+            $processed[] = $this->processLine($row);
         }
-
-        // Mover
-        //$request->file('photo')->move($destinationPath, $fileName);
-        //$request->file('filename')->move($destinationPath, $filename);
-        //$destination_path = 'data/out';
-
 
         $source  = 'data/in/'.$filename;
         $destiny = 'data/out/';
-        $return = $this->moveFileDone($source, $destiny);
+        $this->moveFileDone($source, $destiny);
 
-        echo '<pre>';
-        print_r($return);
-        echo '</pre>';
-
-        exit;
+        return view('dashboard.report')
+            ->with('processed', $processed);
     }
 
     public function moveFileDone($source, $destiny)
@@ -70,110 +67,87 @@ class ProcessController extends Controller
         return rename($source, $to);
     }
 
+    /**
+     *
+     * O arquivo processado deve apresentar como resultados:
+     *
+     * - quantidade de clientes
+     * - quantidade de vendedores
+     * - a média salarial dos vendedores
+     * - o ID da venda mais cara
+     * - o pior vendedor
+     *
+     */
 
-    public function upload(Request $request)
+    public function getQuantityCustomers()
     {
-        if ($request->file('file_import')->isValid()) {
 
-            $path = 'data/in';
-
-//            if ($request->file('arquivos')) {
-//                foreach ($request->arquivos as $arquivo) {
-//                    $arquivo->store($path);
-//                }
-
-            $file_received = file($request->file('file_import'));
-
-            //Ler os dados do array
-            foreach ($file_received as $row) {
-                $row = trim($row);
-
-                echo '<pre>';
-                print_r($row);
-                echo '</pre>';
-            }
-
-            // Extension
-            // echo $request->file('file_import')->getClientOriginalExtension();
-
-            // Nome original
-            // echo $request->file('file_import')->getClientOriginalName();
-
-
-
-
-            // Validar Upload
-            //if ($request->file('photo')->isValid()) {
-            //}
-//            $this->validate($request, [
-//                'name' => 'required',
-//                'email' => 'required|email|unique:users'
-//            ]);
-
-            // Captutrar upload
-            // $file = $request->file('photo');
-
-            // Mover
-            //$request->file('photo')->move($destinationPath, $fileName);
-
-
-//            $path = 'estudos/'.$request->input('type');
-//
-//            if ($request->file('arquivos')) {
-//                foreach ($request->arquivos as $arquivo) {
-//                    $arquivo->store($path);
-//                }
-//            }
-
-        }
-
-
-        exit;
     }
 
-    public function process()
+    public function processLine($row)
     {
-        //Receber os dados do formulário
-        $arquivo_tmp = $_FILES['arquivo']['tmp_name'];
+        $row = trim($row);
+        $row2 = explode(',', $row);
 
-        //ler todo o arquivo para um array
-        $dados = file($arquivo_tmp);
-
-        //Ler os dados do array
-        foreach($dados as $linha){
-            //Retirar os espaços em branco no inicio e no final da string
-            $linha = trim($linha);
-            //Colocar em um array cada item separado pela virgula na string
-            $valor = explode(',', $linha);
-
-            echo '<pre>';
-            print_r($linha);
-            echo '</pre>';
-
-            echo '<pre>';
-            print_r($valor);
-            echo '</pre>';
-            echo '<hr>';
-
-            //Recuperar o valor do array indicando qual posição do array requerido e atribuindo para um variável
-            $nome    = $valor[0];
-            $email   = $valor[1];
-            $usuario = $valor[2];
-            $senha   = $valor[3];
-
-            //Criar a QUERY com PHP para inserir os dados no banco de dados
-            $result_usuario = "INSERT INTO usuarios (nome, email, usuario, senha) VALUES ('$nome', '$email', '$usuario', '$senha')";
-
-            //Executar a QUERY para inserir os registros no banco de dados com MySQLi
-            $resultado_usuario = mysqli_query($conn, $result_usuario);
+        switch ($row2[0]) {
+            case 001:
+                return $this->getSalesman($row);
+            case 002:
+                return $this->getCustomer($row);
+            case 003:
+                return $this->getSales($row);
         }
-
-        exit;
-        //Criar a variável global com a mensagem de sucesso
-        $_SESSION['msg'] = "<p style='color: green;'>Carregado os dados com sucesso!</p>";
-        //Redirecionar o usuário com PHP para a página index.php
-        header("Location: ../index.php");
     }
 
+    public function getSalesman($row)
+    {
+        $row = explode(',', $row);
+        return [
+            'id'     => $row[0],
+            'cpf'    => $row[1],
+            'name'   => $row[2],
+            'salary' => $row[3]
+        ];
+    }
+
+    public function getCustomer($row)
+    {
+        $row = explode(',', $row);
+        return [
+            'id'            => $row[0],
+            'cnpj'          => $row[1],
+            'name'          => $row[2],
+            'business_area' => $row[3]
+        ];
+    }
+
+    public function getSales($row)
+    {
+        $items = $this->getItems($row);
+        $row = explode(',', $row);
+
+        return [
+            'id'            => $row[0],
+            'sale_id'       => $row[1],
+            'items'         => $items,
+            'salesman_id'   => $row[5]
+        ];
+    }
+
+    public function getItems($row)
+    {
+        $items = explode('[', $row);
+        $items = explode(']', $items[1]);
+        $items = explode(',', $items[0]);
+
+        foreach ($items as $key => $item) {
+            $it = explode('-', $item);
+            $items_sale[$key]['id']        = $it[0];
+            $items_sale[$key]['quantity']  = $it[1];
+            $items_sale[$key]['price']     = $it[2];
+        }
+
+        return $items_sale;
+    }
 
 }

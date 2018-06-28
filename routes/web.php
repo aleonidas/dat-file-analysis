@@ -31,3 +31,7 @@ $router->get('/processar', [
 $router->post('/processar', [
     'as' => 'process.store', 'uses' => 'ProcessController@store'
 ]);
+
+$router->get('/relatorio', [
+    'as' => 'process.report', 'uses' => 'ProcessController@report'
+]);
