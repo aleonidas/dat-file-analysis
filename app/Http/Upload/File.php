@@ -16,20 +16,25 @@ class File
         ];
     }
 
-    public function rules()
+    public function getExtensions()
     {
-        return [
-            'file_import' => 'required|file|mimes:dat',
-        ];
+        return $this->extensions;
     }
 
-    public function validFileFormat(UploadedFile $uploadedFile)
+    public function getFilesDirIn()
     {
-        if (in_array($uploadedFile->getClientOriginalExtension(), $this->extensions)) {
-            return true;
+        $files = [];
+
+        if ($handle = opendir(env('STORAGE_IN'))) {
+            while ($file = readdir( $handle)) {
+                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
+                if (in_array($extension, $this->getExtensions())) {
+                    $files[] = $file;
+                }
+            }
+            closedir($handle);
         }
-        return false;
+        return $files;
     }
-
 
 }

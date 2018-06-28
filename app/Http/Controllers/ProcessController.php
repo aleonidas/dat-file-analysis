@@ -2,25 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Upload\File;
 use Illuminate\Http\Request;
+
 
 class ProcessController extends Controller
 {
 
-    public function index()
+    public function index(File $file)
     {
-        $type  = ['dat'];
-        $files = [];
 
-        if ($handle = opendir('data/in')) {
-            while ($file = readdir( $handle)) {
-                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
-                if (in_array($extension, $type)) {
-                    $files[] = $file;
-                }
-            }
-            closedir($handle);
-        }
+        $files = $file->getFilesDirIn();
 
         return view('dashboard.list')
             ->with('files', $files);

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Upload\File;
+use App\Http\Upload\Validate;
 use Illuminate\Http\Request;
 
 class FileController extends Controller
@@ -13,12 +13,12 @@ class FileController extends Controller
         return view('dashboard.home');
     }
 
-    public function upload(Request $request, File $file)
+    public function upload(Request $request, Validate $validate)
     {
         if ($request->file('file_import')->isValid()) {
             $file_received = $request->file('file_import');
 
-            if ($file->validFileFormat($file_received)) {
+            if ($validate->validFileFormat($file_received)) {
                 $filename = $file_received->getClientOriginalName();
                 $file_received->move(env('STORAGE_IN'), $filename);
 
