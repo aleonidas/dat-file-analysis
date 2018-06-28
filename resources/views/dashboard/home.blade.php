@@ -3,7 +3,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        <h3>Importar dados do arquivo</h3>
+        <h3>Importar arquivo</h3>
     </div>
 </div>
 <div class="row">

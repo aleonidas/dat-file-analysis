@@ -13,26 +13,6 @@ class HomeController extends Controller
         return view('dashboard.home');
     }
 
-    public function show()
-    {
-        $type  = ['dat'];
-        $files = [];
-
-        if ($handle = opendir('data/in')) {
-            while ($file = readdir( $handle)) {
-                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
-                if (in_array($extension, $type)) {
-                    $files[] = $file;
-                }
-            }
-            closedir($handle);
-        }
-
-
-        return view('dashboard.list')
-            ->with('files', $files);
-    }
-
     public function upload(Request $request)
     {
         if ($request->file('file_import')->isValid()) {
@@ -48,7 +28,7 @@ class HomeController extends Controller
             $file_received->move($path, $filename);
 
             return redirect()
-                ->route('home.show');
+                ->route('process.index');
         }
 
         return redirect()
@@ -61,28 +41,5 @@ class HomeController extends Controller
             return true;
         }
     }
-
-    public function uploadOld(Request $request, $id)
-    {
-        $path = 'estudos/'.$request->input('type');
-
-        if ($request->file('arquivos')) {
-            foreach ($request->arquivos as $arquivo) {
-                $arquivo->store($path);
-
-                Estudo::create([
-                    'type'      => $request->input('type'),
-                    'name'      => $arquivo->getClientOriginalName(),
-                    'file'      => $arquivo->hashName(),
-                    'pessoa_id' => $id
-                ]);
-            }
-        }
-
-        return redirect()
-            ->route('estudos', $id)
-            ->with('success', 'Arquivos enviados com sucesso.');
-    }
-
 
 }

@@ -15,10 +15,11 @@
                     <td>
                         {{ $file }}
                     </td>
-                    <td>
-                        <a href="">
-                            Processar
-                        </a>
+                    <td class="text-right">
+                        <form action="{{ route('process.store') }}" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="filename" value="{{ $file }}">
+                            <input type="submit" class="btn btn-primary" value="Processar">
+                        </form>
                     </td>
                 </tr>
                 @endforeach

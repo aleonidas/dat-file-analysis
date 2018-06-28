@@ -2,16 +2,74 @@
 
 namespace App\Http\Controllers;
 
-use function file;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use function rename;
 
-class HomeController extends Controller
+class ProcessController extends Controller
 {
 
     public function index()
     {
-        return view('dashboard.home');
+        $type  = ['dat'];
+        $files = [];
+
+        if ($handle = opendir('data/in')) {
+            while ($file = readdir( $handle)) {
+                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
+                if (in_array($extension, $type)) {
+                    $files[] = $file;
+                }
+            }
+            closedir($handle);
+        }
+
+
+        return view('dashboard.list')
+            ->with('files', $files);
     }
+
+    public function store(Request $request)
+    {
+        $filename = $request->input('filename');
+        $path = 'data/in';
+
+        $file_process = file($path.'/'.$filename);
+
+        //Ler os dados do array
+        foreach ($file_process as $row) {
+            $row = trim($row);
+
+            echo '<pre>';
+            print_r($row);
+            echo '</pre>';
+        }
+
+        // Mover
+        //$request->file('photo')->move($destinationPath, $fileName);
+        //$request->file('filename')->move($destinationPath, $filename);
+        //$destination_path = 'data/out';
+
+
+        $source  = 'data/in/'.$filename;
+        $destiny = 'data/out/';
+        $return = $this->moveFileDone($source, $destiny);
+
+        echo '<pre>';
+        print_r($return);
+        echo '</pre>';
+
+        exit;
+    }
+
+    public function moveFileDone($source, $destiny)
+    {
+        $info = pathinfo($source);
+        $basename = $info['filename'].'.done.'.$info['extension'];
+        $to = $destiny . DIRECTORY_SEPARATOR . $basename;
+        return rename($source, $to);
+    }
+
 
     public function upload(Request $request)
     {
@@ -115,41 +173,6 @@ class HomeController extends Controller
         $_SESSION['msg'] = "<p style='color: green;'>Carregado os dados com sucesso!</p>";
         //Redirecionar o usuário com PHP para a página index.php
         header("Location: ../index.php");
-    }
-
-    public function update(Request $request, $id)
-    {
-        Estudo::create([
-            'type'      => $request->input('type'),
-            'name'      => $request->input('name'),
-            'pessoa_id' => $id
-        ]);
-
-        return redirect()
-            ->route('estudos', $id)
-            ->with('success', 'Estudo adicionado com sucesso.');
-    }
-
-    public function uploadOld(Request $request, $id)
-    {
-        $path = 'estudos/'.$request->input('type');
-
-        if ($request->file('arquivos')) {
-            foreach ($request->arquivos as $arquivo) {
-                $arquivo->store($path);
-
-                Estudo::create([
-                    'type'      => $request->input('type'),
-                    'name'      => $arquivo->getClientOriginalName(),
-                    'file'      => $arquivo->hashName(),
-                    'pessoa_id' => $id
-                ]);
-            }
-        }
-
-        return redirect()
-            ->route('estudos', $id)
-            ->with('success', 'Arquivos enviados com sucesso.');
     }
 
 

@@ -19,10 +19,15 @@ $router->get('/', [
     'as' => 'home', 'uses' => 'HomeController@index'
 ]);
 
-$router->post('home/upload', [
+$router->post('/home/upload', [
     'as' => 'home.upload', 'uses' => 'HomeController@upload'
 ]);
 
-$router->get('/listar', [
-    'as' => 'home.show', 'uses' => 'HomeController@show'
+
+$router->get('/processar', [
+    'as' => 'process.index', 'uses' => 'ProcessController@index'
+]);
+
+$router->post('/processar', [
+    'as' => 'process.store', 'uses' => 'ProcessController@store'
 ]);
