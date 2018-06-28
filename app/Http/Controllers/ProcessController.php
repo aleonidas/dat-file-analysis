@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use function is_null;
 
 class ProcessController extends Controller
 {

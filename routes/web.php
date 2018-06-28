@@ -16,11 +16,11 @@
 //});
 
 $router->get('/', [
-    'as' => 'home', 'uses' => 'HomeController@index'
+    'as' => 'home', 'uses' => 'FileController@index'
 ]);
 
 $router->post('/home/upload', [
-    'as' => 'home.upload', 'uses' => 'HomeController@upload'
+    'as' => 'home.upload', 'uses' => 'FileController@upload'
 ]);
 
 $router->get('/processar', [
