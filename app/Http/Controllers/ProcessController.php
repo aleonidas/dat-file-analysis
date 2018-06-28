@@ -22,7 +22,7 @@ class ProcessController extends Controller
             ->with('files', $file->getFilesDirIn());
     }
 
-    public function store(Request $request)
+    public function store(Request $request, File $file)
     {
         $filename = $request->input('filename');
         $file_process = file(env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename);
@@ -40,25 +40,10 @@ class ProcessController extends Controller
             'id_worst_seller'           => ModelSales::worstSeller($processed)
         ];
 
-
-//        echo '<pre>';
-//        print_r($processed_information);
-//        exit;
-
-
-        $source  = env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename;
-        $destiny = env('STORAGE_OUT');
-        $this->moveFileDone($source, $destiny);
+        $file->moveFileDone($filename);
 
         return view('dashboard.report')
             ->with('processed', $processed_information);
     }
 
-    public function moveFileDone($source, $destiny)
-    {
-        $info = pathinfo($source);
-        $basename = $info['filename'].'.done.'.$info['extension'];
-        $to = $destiny . DIRECTORY_SEPARATOR . $basename;
-        return rename($source, $to);
-    }
 }

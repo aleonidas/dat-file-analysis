@@ -35,4 +35,16 @@ class File
         return $files;
     }
 
+    public function moveFileDone($filename)
+    {
+        $source  = env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename;
+        $destiny = env('STORAGE_OUT');
+
+        $info = pathinfo($source);
+        $basename = $info['filename'].'.done.'.$info['extension'];
+        $to = $destiny . DIRECTORY_SEPARATOR . $basename;
+
+        return rename($source, $to);
+    }
+
 }
