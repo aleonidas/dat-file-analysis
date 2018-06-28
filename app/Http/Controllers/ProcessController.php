@@ -9,6 +9,7 @@ use App\Data\Sales;
 use App\Data\Salesman;
 use App\Http\Upload\File;
 use Illuminate\Http\Request;
+use App\Models\Salesman as ModelSalesman;
 
 
 class ProcessController extends Controller
@@ -37,8 +38,16 @@ class ProcessController extends Controller
         $processed['id_worst_seller'] = $this->worstSeller($processed);
 
 
-        $source  = 'data/in/'.$filename;
-        $destiny = 'data/out/';
+        ModelSalesman::getQuantity($processed);
+
+        $re = new ModelSalesman();
+        $re->getQuantity($processed);
+
+        exit;
+
+
+        $source  = env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename;
+        $destiny = env('STORAGE_OUT');
         $this->moveFileDone($source, $destiny);
 
         return view('dashboard.report')
