@@ -15,7 +15,22 @@ class HomeController extends Controller
 
     public function show()
     {
-        return view('dashboard.list');
+        $type  = ['dat'];
+        $files = [];
+
+        if ($handle = opendir('data/in')) {
+            while ($file = readdir( $handle)) {
+                $extension = strtolower( pathinfo($file, PATHINFO_EXTENSION));
+                if (in_array($extension, $type)) {
+                    $files[] = $file;
+                }
+            }
+            closedir($handle);
+        }
+
+
+        return view('dashboard.list')
+            ->with('files', $files);
     }
 
     public function upload(Request $request)

@@ -15,6 +15,13 @@
             <hr>
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-12">
+            <a href="{{ route('home') }}">Home</a> |
+            <a href="{{ route('home.show') }}">Processar Arquivos</a> |
+            Arquivos Processados
+        </div>
+    </div>
 
     @yield('content')
 
