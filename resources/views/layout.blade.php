@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>RZ2</title>
+    <title>Análise de Arquivos</title>
     <link href="{{ '/assets/css/bootstrap.min.css' }}" rel="stylesheet"/>
 
     <style>
