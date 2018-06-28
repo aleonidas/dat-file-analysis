@@ -11,17 +11,14 @@ class ProcessController extends Controller
 
     public function index(File $file)
     {
-
-        $files = $file->getFilesDirIn();
-
         return view('dashboard.list')
-            ->with('files', $files);
+            ->with('files', $file->getFilesDirIn());
     }
 
     public function store(Request $request)
     {
         $filename = $request->input('filename');
-        $path = 'data/in';
+        $path = env('STORAGE_IN');
 
         $file_process = file($path.'/'.$filename);
         $processed = [];
