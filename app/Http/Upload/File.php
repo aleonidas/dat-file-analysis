@@ -2,8 +2,7 @@
 
 namespace App\Http\Upload;
 
-
-use function in_array;
+use Illuminate\Http\UploadedFile;
 
 class File
 {
@@ -24,9 +23,9 @@ class File
         ];
     }
 
-    public function validFileFormat($file_received)
+    public function validFileFormat(UploadedFile $uploadedFile)
     {
-        if (in_array($file_received->getClientOriginalExtension(), $this->extensions)) {
+        if (in_array($uploadedFile->getClientOriginalExtension(), $this->extensions)) {
             return true;
         }
         return false;
