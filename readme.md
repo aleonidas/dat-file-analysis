@@ -1,4 +1,4 @@
-## Análise da arquivos
+## Análise de arquivos
 
 ##### Estrutura
 - PHP 7+
