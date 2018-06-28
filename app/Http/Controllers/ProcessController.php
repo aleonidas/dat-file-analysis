@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Data\Customer;
+use App\Data\Item;
+use App\Data\Process;
+use App\Data\Sales;
+use App\Data\Salesman;
 use App\Http\Upload\File;
 use Illuminate\Http\Request;
 
@@ -18,15 +23,12 @@ class ProcessController extends Controller
     public function store(Request $request)
     {
         $filename = $request->input('filename');
-        $path = env('STORAGE_IN');
-
-        $file_process = file($path.'/'.$filename);
+        $file_process = file(env('STORAGE_IN'). DIRECTORY_SEPARATOR .$filename);
         $processed = [];
 
         foreach ($file_process as $row) {
-            $processed[] = $this->processLine($row);
+            $processed[] = Process::run($row);
         }
-
 
         $processed['quantity_salesman'] = $this->getQuantityOfPerson($processed, 'salesman');
         $processed['quantity_customer'] = $this->getQuantityOfPerson($processed, 'customer');
@@ -112,86 +114,6 @@ class ProcessController extends Controller
         }
 
         return $salesman_id;
-    }
-
-
-    public function processLine($row)
-    {
-        $row = trim($row);
-        $row2 = explode(',', $row);
-
-        switch ($row2[0]) {
-            case 001:
-                return $this->getSalesman($row);
-            case 002:
-                return $this->getCustomer($row);
-            case 003:
-                return $this->getSales($row);
-        }
-    }
-
-    public function getSalesman($row)
-    {
-        $row = explode(',', $row);
-        return [
-            'salesman' => [
-                    'id'     => $row[0],
-                    'cpf'    => $row[1],
-                    'name'   => $row[2],
-                    'salary' => $row[3]
-                ]
-            ];
-    }
-
-    public function getCustomer($row)
-    {
-        $row = explode(',', $row);
-        return [
-            'customer' => [
-                    'id'            => $row[0],
-                    'cnpj'          => $row[1],
-                    'name'          => $row[2],
-                    'business_area' => $row[3]
-                ]
-            ];
-    }
-
-    public function getSales($row)
-    {
-        $items = $this->getItems($row);
-        $row = explode(',', $row);
-
-        return [
-            'sales' => [
-                'id'            => $row[0],
-                'sale_id'       => $row[1],
-                'items'         => $items,
-                'salesman_id'   => $row[5],
-                'total'         => $items['total']
-                ]
-        ];
-    }
-
-    public function getItems($row)
-    {
-        $items = explode('[', $row);
-        $items = explode(']', $items[1]);
-        $items = explode(',', $items[0]);
-        $items = str_replace(' ', '', $items);
-        $total = 0;
-
-        foreach ($items as $key => $item) {
-            $it = explode('-', $item);
-            $items_sale[$key]['id']        = $it[0];
-            $items_sale[$key]['quantity']  = $it[1];
-            $items_sale[$key]['price']     = $it[2];
-            $items_sale[$key]['subtotal']  = ($it[2] * $it[1]);
-            $total += ($it[2] * $it[1]);
-        }
-
-        $items_sale['total'] = $total;
-
-        return $items_sale;
     }
 
 }
